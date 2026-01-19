@@ -80,8 +80,17 @@ def run_resilience_assessment(
                 print(f"警告：无法删除旧输出文件 {output_file}：{str(e)}")
     
     # 执行 Julia 完整流程
+    # 设置 Julia 路径和 Gurobi 许可证
+    julia_path = os.path.expanduser("~/julia/julia-1.11.7/bin/julia")
+    if not os.path.exists(julia_path):
+        julia_path = "julia"  # 回退到系统路径
+    
+    env = os.environ.copy()
+    env["PATH"] = os.path.expanduser("~/julia/julia-1.11.7/bin") + ":" + env.get("PATH", "")
+    env["GRB_LICENSE_FILE"] = os.path.expanduser("~/gurobi.lic")
+    
     julia_command = [
-        "julia",
+        julia_path,
         "--project=.",
         "main.jl",
         "--full"
@@ -99,7 +108,8 @@ def run_resilience_assessment(
             cwd=julia_project_path,
             capture_output=True,
             text=True,
-            timeout=3600  # 1小时超时
+            timeout=3600,  # 1小时超时
+            env=env
         )
         
         print(f"Julia 执行完成，返回码：{result.returncode}")
