@@ -81,13 +81,14 @@ def run_resilience_assessment(
     
     # 执行 Julia 完整流程
     # 设置 Julia 路径和 Gurobi 许可证
-    julia_path = os.path.expanduser("~/julia/julia-1.11.7/bin/julia")
+    julia_path = os.path.expanduser("~/julia-1.11.7/bin/julia")
     if not os.path.exists(julia_path):
         julia_path = "julia"  # 回退到系统路径
     
     env = os.environ.copy()
-    env["PATH"] = os.path.expanduser("~/julia/julia-1.11.7/bin") + ":" + env.get("PATH", "")
+    env["PATH"] = os.path.expanduser("~/julia-1.11.7/bin") + ":" + env.get("PATH", "")
     env["GRB_LICENSE_FILE"] = os.path.expanduser("~/gurobi.lic")
+    env["JULIA_PKG_PRECOMPILE_AUTO"] = "0"  # 禁用自动预编译
     
     julia_command = [
         julia_path,
